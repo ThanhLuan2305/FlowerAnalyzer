@@ -3,6 +3,12 @@
 - pip install django-cors-headers
 - pip install tensorflow
 - add file best.keras into folder /analyzer
+- open powershell
+- cd .\FlowerAnalyzer\
+- ls
+- cd .\FlowerAnalyzer\
+- python manage.py migrate
+- python manage.py runserver
 
 ![image](https://github.com/user-attachments/assets/af068358-cf28-48bd-b75d-da90a3adbbdc)
 

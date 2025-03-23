@@ -41,8 +41,9 @@ def predict_flower(request):
             prob = []
             for i, j in enumerate(p[0], 0):
                 classes.append(labels[i])
-                prob.append(round(j * 100, 2))
-
+                prob.append(float(round(j * 100, 2)))
+            print("classes: ", classes)
+            print("prob: ", prob)
             # Lưu kết quả vào database
             DataTrained.objects.create(
                 file_path=img_file.name,

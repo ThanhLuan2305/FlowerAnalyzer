@@ -16,10 +16,9 @@ import { predictFlower } from "../service/api";
 const UploadImage = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [prediction, setPrediction] = useState(null);
-  console.log("🚀 ~ UploadImage ~ prediction:", prediction);
   const [loading, setLoading] = useState(false);
 
-  const requestPermission = async () => {
+  const requestLibraryPermission = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== "granted") {
       Alert.alert("⚠️ Bạn cần cấp quyền để chọn ảnh!");
@@ -28,9 +27,19 @@ const UploadImage = () => {
     return true;
   };
 
+  const requestCameraPermission = async () => {
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    if (status !== "granted") {
+      Alert.alert("⚠️ Bạn cần cấp quyền để sử dụng camera!");
+      return false;
+    }
+    return true;
+  };
+
   const pickImage = async () => {
-    const hasPermission = await requestPermission();
+    const hasPermission = await requestLibraryPermission();
     if (!hasPermission) return;
+
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
@@ -43,9 +52,24 @@ const UploadImage = () => {
     }
   };
 
+  const takePhoto = async () => {
+    const hasPermission = await requestCameraPermission();
+    if (!hasPermission) return;
+
+    let result = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setSelectedFile(result.assets[0].uri);
+      setPrediction(null);
+    }
+  };
+
   const handleUpload = async () => {
     if (!selectedFile) {
-      Alert.alert("🚨 Vui lòng chọn ảnh trước!");
+      Alert.alert("🚨 Vui lòng chọn hoặc chụp ảnh trước!");
       return;
     }
 
@@ -73,7 +97,11 @@ const UploadImage = () => {
         <Text style={styles.title}>🌸 Tải ảnh lên để dự đoán 🌼</Text>
 
         <TouchableOpacity style={styles.uploadButton} onPress={pickImage}>
-          <Text style={styles.uploadText}>Chọn ảnh từ thư viện</Text>
+          <Text style={styles.uploadText}>📂 Chọn ảnh từ thư viện</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.cameraButton} onPress={takePhoto}>
+          <Text style={styles.uploadText}>📷 Chụp ảnh mới</Text>
         </TouchableOpacity>
 
         {selectedFile ? (
@@ -101,6 +129,7 @@ const UploadImage = () => {
           )}
         </TouchableOpacity>
       </Animated.View>
+
       {prediction ? (
         <Animated.View
           entering={FadeInUp.delay(300).duration(500)}
@@ -140,7 +169,17 @@ const styles = StyleSheet.create({
     backgroundColor: "#BA68C8",
     padding: 12,
     borderRadius: 8,
+    marginBottom: 10,
+    width: "100%",
+    alignItems: "center",
+  },
+  cameraButton: {
+    backgroundColor: "#64B5F6",
+    padding: 12,
+    borderRadius: 8,
     marginBottom: 15,
+    width: "100%",
+    alignItems: "center",
   },
   uploadText: {
     color: "white",
@@ -162,6 +201,8 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 8,
     marginTop: 10,
+    width: "100%",
+    alignItems: "center",
   },
   predictText: {
     color: "white",

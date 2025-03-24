@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://192.168.1.7:8000/api/predict/";
+const API_URL = "http://192.168.1.31:8000/api/predict/";
 
 export const predictFlower = async (imageUri) => {
   const formData = new FormData();
